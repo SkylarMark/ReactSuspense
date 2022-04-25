@@ -1,28 +1,67 @@
-import React, {Suspense, useState} from 'react';
-import './App.css';
-import CalendarComponent from './sections/example';
+import React, { Suspense, useState, useTransition } from "react";
+import "./App.css";
+import CalendarComponent, { Calendar } from "./sections/example";
 
 const DefaultApp = React.lazy(() => import("./sections/DefaultApp"));
 
-function App() {
+export function SuspenseApp() {
   const [user, setUser] = useState<boolean>(false);
 
   if (user) {
     return (
-      // fallback component is rendered until our main component is loaded
-      <Suspense fallback={<div>Loading</div>}>
-        <button onClick={() => setUser(false)} > Change User </button>
+      <div>
+        <button onClick={() => setUser(false)}> Go Back!! </button>
         <CalendarComponent />
-      </Suspense>
+      </div>
     );
   } else {
     return (
-      <Suspense fallback={<div>Loading</div>}>
-        <button onClick={() => setUser(true)} > Change User </button>
+      <div>
+        <button onClick={() => setUser(true)}> Suspence!! </button>
         <DefaultApp />
-      </Suspense>
+      </div>
     );
   }
 }
 
-export default App;
+export function TransitionApp() {
+  const [user, setUser] = useState<boolean>(false);
+  const [isPending, startTransition] = useTransition();
+
+  if (isPending) {
+    return <div> Transition Loading ..... </div>;
+  }
+
+  if (user) {
+    return (
+      // fallback component is rendered until our main component is loaded
+      <div>
+        <button
+          onClick={() =>
+            startTransition(() => {
+              setUser(false);
+            })
+          }
+        >
+          Go Back!!
+        </button>
+        <Calendar />
+      </div>
+    );
+  } else {
+    return (
+      <div>
+        <button
+          onClick={() =>
+            startTransition(() => {
+              setUser(true);
+            })
+          }
+        >
+          Transition!!
+        </button>
+        <DefaultApp />
+      </div>
+    );
+  }
+}
