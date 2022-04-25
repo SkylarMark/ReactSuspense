@@ -1,26 +1,28 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {Suspense, useState} from 'react';
 import './App.css';
+import CalendarComponent from './sections/example';
+
+const DefaultApp = React.lazy(() => import("./sections/DefaultApp"));
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  const [user, setUser] = useState<boolean>(false);
+
+  if (user) {
+    return (
+      // fallback component is rendered until our main component is loaded
+      <Suspense fallback={<div>Loading</div>}>
+        <button onClick={() => setUser(false)} > Change User </button>
+        <CalendarComponent />
+      </Suspense>
+    );
+  } else {
+    return (
+      <Suspense fallback={<div>Loading</div>}>
+        <button onClick={() => setUser(true)} > Change User </button>
+        <DefaultApp />
+      </Suspense>
+    );
+  }
 }
 
 export default App;
